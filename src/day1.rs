@@ -41,3 +41,34 @@
 
 // Of course, your expense report is much larger. Find the two entries
 // that sum to 2020; what do you get if you multiply them together?
+
+use std::fs::File;
+use std::io::{self, BufRead};
+use std::path::Path;
+
+pub fn part1() -> u32 {
+    let file = File::open(Path::new("day1-input.txt")).expect("open");
+    let mut numbers: Vec<u32> = Vec::new();
+    for line in io::BufReader::new(file).lines() {
+        numbers.push(line.expect("line").parse().expect("parse"))
+    }
+
+    for (ifirst, first) in numbers.iter().enumerate() {
+        for (isecond, second) in numbers.iter().enumerate() {
+            if first + second == 2020 && ifirst != isecond {
+                return first * second;
+            }
+        }
+    }
+    return 0;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part1() {
+        assert_eq!(633216, part1())
+    }
+}
