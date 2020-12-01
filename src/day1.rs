@@ -63,6 +63,59 @@ pub fn part1() -> u32 {
     return 0;
 }
 
+// --- Part Two ---
+
+// The Elves in accounting are thankful for your help; one of them
+// even offers you a starfish coin they had left over from a past
+// vacation. They offer you a second one if you can find three numbers
+// in your expense report that meet the same criteria.
+
+// Using the above example again, the three entries that sum to 2020
+// are 979, 366, and 675. Multiplying them together produces the
+// answer, 241861950.
+
+// In your expense report, what is the product of the three entries
+// that sum to 2020?
+
+// --- Part Two ---
+
+// The Elves in accounting are thankful for your help; one of them
+// even offers you a starfish coin they had left over from a past
+// vacation. They offer you a second one if you can find three numbers
+// in your expense report that meet the same criteria.
+
+// Using the above example again, the three entries that sum to 2020
+// are 979, 366, and 675. Multiplying them together produces the
+// answer, 241861950.
+
+// In your expense report, what is the product of the three entries
+// that sum to 2020?
+
+pub fn part2() -> u32 {
+    let file = File::open(Path::new("day1-input.txt")).expect("open");
+    let mut numbers: Vec<u32> = Vec::new();
+    for line in io::BufReader::new(file).lines() {
+        numbers.push(line.expect("line").parse().expect("parse"))
+    }
+
+    for (ifirst, first) in numbers.iter().enumerate() {
+        for (isecond, second) in numbers.iter().enumerate() {
+            if ifirst == isecond {
+                continue;
+            }
+            for (ithird, third) in numbers.iter().enumerate() {
+                if ifirst == ithird || isecond == ithird {
+                    continue;
+                }
+                if first + second + third == 2020 {
+                    return first * second * third;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -70,5 +123,9 @@ mod tests {
     #[test]
     fn test_part1() {
         assert_eq!(633216, part1())
+    }
+    #[test]
+    fn test_part2() {
+        assert_eq!(68348924, part2())
     }
 }
