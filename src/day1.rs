@@ -60,7 +60,7 @@ pub fn part1() -> u32 {
             }
         }
     }
-    return 0;
+    0
 }
 
 // --- Part Two ---
@@ -113,7 +113,7 @@ pub fn part2() -> u32 {
             }
         }
     }
-    return 0;
+    0
 }
 
 #[cfg(test)]
