@@ -81,6 +81,54 @@ pub fn part1() -> usize {
     entries.iter().filter(|e| is_valid(e)).count()
 }
 
+// --- Part Two ---
+
+// While it appears you validated the passwords correctly, they don't
+// seem to be what the Official Toboggan Corporate Authentication
+// System is expecting.
+
+// The shopkeeper suddenly realizes that he just accidentally
+// explained the password policy rules from his old job at the sled
+// rental place down the street! The Official Toboggan Corporate
+// Policy actually works a little differently.
+
+// Each policy actually describes two positions in the password, where
+// 1 means the first character, 2 means the second character, and so
+// on. (Be careful; Toboggan Corporate Policies have no concept of
+// "index zero"!) Exactly one of these positions must contain the
+// given letter. Other occurrences of the letter are irrelevant for
+// the purposes of policy enforcement.
+
+// Given the same example list from above:
+
+// 1-3 a: abcde is valid: position 1 contains a and position 3 does not.
+// 1-3 b: cdefg is invalid: neither position 1 nor position 3 contains b.
+// 2-9 c: ccccccccc is invalid: both position 2 and position 9 contain c.
+
+// How many passwords are valid according to the new interpretation of the policies?
+
+pub fn part2() -> usize {
+    let file = File::open(Path::new("day2-input.txt")).expect("open");
+    let mut entries: Vec<Entry> = Vec::new();
+    for line in io::BufReader::new(file).lines() {
+        entries.push(line.expect("line").parse().expect("parse"))
+    }
+    entries.iter().filter(|e| is_new_valid(e)).count()
+}
+
+fn is_new_valid(
+    Entry {
+        min,
+        max,
+        character,
+        password,
+    }: &Entry,
+) -> bool {
+    let chars: Vec<_> = password.as_str().chars().collect();
+    (*character == chars[min - 1] && *character != chars[max - 1])
+        || (*character != chars[min - 1] && *character == chars[max - 1])
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -88,5 +136,10 @@ mod tests {
     #[test]
     fn test_part1() {
         assert_eq!(445, part1())
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(445, part2())
     }
 }
