@@ -70,3 +70,32 @@
 
 // Starting at the top-left corner of your map and following a slope
 // of right 3 and down 1, how many trees would you encounter?
+
+use std::fs::File;
+use std::io::{self, BufRead};
+use std::path::Path;
+
+pub fn part1() -> usize {
+    let file = File::open(Path::new("day3-input.txt")).expect("open");
+    let mut num_trees = 0;
+    for (irow, row) in io::BufReader::new(file).lines().enumerate() {
+        if irow > 0 {
+            num_trees += if let Some('#') = row.expect("row").chars().cycle().nth(irow * 3) {
+                1
+            } else {
+                0
+            };
+        }
+    }
+    num_trees
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part1() {
+        assert_eq!(148, part1())
+    }
+}
