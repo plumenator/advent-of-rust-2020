@@ -90,6 +90,49 @@ pub fn part1() -> usize {
     num_trees
 }
 
+// --- Part Two ---
+
+// Time to check the rest of the slopes - you need to minimize the
+// probability of a sudden arboreal stop, after all.
+
+// Determine the number of trees you would encounter if, for each of
+// the following slopes, you start at the top-left corner and traverse
+// the map all the way to the bottom:
+
+// Right 1, down 1.
+// Right 3, down 1. (This is the slope you already checked.)
+// Right 5, down 1.
+// Right 7, down 1.
+// Right 1, down 2.
+
+// In the above example, these slopes would find 2, 7, 3, 4, and 2
+// tree(s) respectively; multiplied together, these produce the answer
+// 336.
+
+// What do you get if you multiply together the number of trees
+// encountered on each of the listed slopes?
+
+pub fn part2() -> usize {
+    let slopes = vec![(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)];
+    let mut product = 1;
+    for (right, down) in slopes {
+        let mut num_trees = 0;
+        let file = File::open(Path::new("day3-input.txt")).expect("open");
+        for (irow, row) in io::BufReader::new(file).lines().enumerate() {
+            if irow > 0 && irow % down == 0 {
+                num_trees +=
+                    if let Some('#') = row.expect("row").chars().cycle().nth(irow / down * right) {
+                        1
+                    } else {
+                        0
+                    };
+            }
+        }
+        product *= num_trees
+    }
+    product
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -97,5 +140,10 @@ mod tests {
     #[test]
     fn test_part1() {
         assert_eq!(148, part1())
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(727923200, part2())
     }
 }
