@@ -47,8 +47,8 @@ fn get_kvs(passport: &str) -> impl Iterator<Item = (&str, &str)> {
 fn is_valid((key, val): (&str, &str)) -> bool {
     match key {
         "byr" => range_parse(val, 1920, 2002),
-        "iyr" => iyr_parse(val),
-        "eyr" => eyr_parse(val),
+        "iyr" => range_parse(val, 2010, 2020),
+        "eyr" => range_parse(val, 2020, 2030),
         "hgt" => {
             let length = val.len();
             match val.split_at(length - 2) {
@@ -64,33 +64,6 @@ fn is_valid((key, val): (&str, &str)) -> bool {
         "ecl" => matches!(val, "amb" | "blu" | "brn" | "gry" | "grn" | "hzl" | "oth"),
         "pid" => pid_parse(val),
         _ => true,
-    }
-}
-
-fn byr_parse(input: &str) -> bool {
-    let byr: Result<u32, _> = input.parse();
-    if let Ok(byr) = byr {
-        1920 <= byr && byr <= 2002
-    } else {
-        false
-    }
-}
-
-fn iyr_parse(input: &str) -> bool {
-    let iyr: Result<u32, _> = input.parse();
-    if let Ok(iyr) = iyr {
-        2010 <= iyr && iyr <= 2020
-    } else {
-        false
-    }
-}
-
-fn eyr_parse(input: &str) -> bool {
-    let eyr: Result<u32, _> = input.parse();
-    if let Ok(eyr) = eyr {
-        2020 <= eyr && eyr <= 2030
-    } else {
-        false
     }
 }
 
