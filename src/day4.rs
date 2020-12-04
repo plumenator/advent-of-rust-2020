@@ -1,18 +1,18 @@
 use std::path::Path;
 
-pub fn part1() -> u32 {
+pub fn part1() -> usize {
     let path = Path::new("day4-input.txt");
     let input = std::fs::read_to_string(path).expect("read");
-    let mut valid = 0;
     let passports = input.as_str().split("\n\n");
     let all_keys = &["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
-    for passport in passports {
-        let keys: Vec<_> = get_keys(passport).collect();
-        if all_keys.iter().all(|k| keys.contains(k)) {
-            valid += 1;
-        }
-    }
-    valid
+    passports
+        .map(|passport| {
+            all_keys
+                .iter()
+                .all(|k| get_keys(passport).find(|key| key == k).is_some())
+        })
+        .filter(|b| *b)
+        .count()
 }
 
 fn get_keys(passport: &str) -> impl Iterator<Item = &str> {
@@ -21,20 +21,21 @@ fn get_keys(passport: &str) -> impl Iterator<Item = &str> {
         .map(|p| p.split(':').next().expect("next"))
 }
 
-pub fn part2() -> u32 {
+pub fn part2() -> usize {
     let path = Path::new("day4-input.txt");
     let input = std::fs::read_to_string(path).expect("read");
-    let mut valid = 0;
     let passports = input.as_str().split("\n\n");
     let all_keys = &["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
-    for passport in passports {
-        let keys: Vec<_> = get_keys(passport).collect();
-        let mut kvs = get_kvs(passport);
-        if all_keys.iter().all(|k| keys.contains(k)) && kvs.all(is_valid) {
-            valid += 1;
-        }
-    }
-    valid
+    passports
+        .map(|passport| {
+            all_keys.iter().all(|k| {
+                get_kvs(passport)
+                    .find(|(key, val)| key == k && is_valid(key, val))
+                    .is_some()
+            })
+        })
+        .filter(|b| *b)
+        .count()
 }
 
 fn get_kvs(passport: &str) -> impl Iterator<Item = (&str, &str)> {
@@ -44,19 +45,16 @@ fn get_kvs(passport: &str) -> impl Iterator<Item = (&str, &str)> {
     })
 }
 
-fn is_valid((key, val): (&str, &str)) -> bool {
+fn is_valid(key: &str, val: &str) -> bool {
     match key {
         "byr" => range_parse(val, 1920, 2002),
         "iyr" => range_parse(val, 2010, 2020),
         "eyr" => range_parse(val, 2020, 2030),
-        "hgt" => {
-            let length = val.len();
-            match val.split_at(length - 2) {
-                (val, "cm") => range_parse(val, 150, 193),
-                (val, "in") => range_parse(val, 59, 76),
-                _ => false,
-            }
-        }
+        "hgt" => match val.split_at(val.len() - 2) {
+            (val, "cm") => range_parse(val, 150, 193),
+            (val, "in") => range_parse(val, 59, 76),
+            _ => false,
+        },
         "hcl" => match val.split_at(1) {
             ("#", val) => hex_parse(val),
             _ => false,
