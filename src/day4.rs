@@ -9,7 +9,7 @@ pub fn part1() -> usize {
         .map(|passport| {
             all_keys
                 .iter()
-                .all(|k| get_keys(passport).find(|key| key == k).is_some())
+                .all(|k| get_keys(passport).any(|key| &key == k))
         })
         .filter(|b| *b)
         .count()
@@ -28,11 +28,9 @@ pub fn part2() -> usize {
     let all_keys = &["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
     passports
         .map(|passport| {
-            all_keys.iter().all(|k| {
-                get_kvs(passport)
-                    .find(|(key, val)| key == k && is_valid(key, val))
-                    .is_some()
-            })
+            all_keys
+                .iter()
+                .all(|k| get_kvs(passport).any(|(key, val)| &key == k && is_valid(key, val)))
         })
         .filter(|b| *b)
         .count()
