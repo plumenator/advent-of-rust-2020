@@ -58,3 +58,58 @@
 
 // As a sanity check, look through your list of boarding passes. What
 // is the highest seat ID on a boarding pass?
+
+use std::fs::File;
+use std::io::{self, BufRead};
+use std::path::Path;
+
+pub fn part1() -> usize {
+    let file = File::open(Path::new("day5-input.txt")).expect("open");
+    io::BufReader::new(file)
+        .lines()
+        .map(|pass| seat_id(&pass.expect("pass")))
+        .max()
+        .expect("max")
+}
+
+fn seat_id(pass: &str) -> usize {
+    let (vertical, horizontal) = pass.split_at(7);
+    let row = reduce(vertical, 'F', 0, 127);
+    let col = reduce(horizontal, 'L', 0, 7);
+    row * 8 + col
+}
+
+fn reduce(chars: &str, lchar: char, min: usize, max: usize) -> usize {
+    let (first, second) = reduce_h(chars, lchar, min, max);
+    assert_eq!(first, second);
+    first
+}
+
+fn reduce_h(chars: &str, lchar: char, min: usize, max: usize) -> (usize, usize) {
+    if max - min == 1 {
+        let last = if chars.starts_with(lchar) { min } else { max };
+        (last, last)
+    } else if chars.starts_with(lchar) {
+        reduce_h(&chars[1..], lchar, min, max - (max - min) / 2 - 1)
+    } else {
+        reduce_h(&chars[1..], lchar, min + (max - min) / 2 + 1, max)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_seat_id() {
+        assert_eq!(seat_id("FBFBBFFRLR"), 357);
+        assert_eq!(seat_id("BFFFBBFRRR"), 567);
+        assert_eq!(seat_id("FFFBBBFRRR"), 119);
+        assert_eq!(seat_id("BBFFBBFRLL"), 820);
+    }
+
+    #[test]
+    fn test_part1() {
+        assert_eq!(828, part1())
+    }
+}
