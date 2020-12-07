@@ -117,12 +117,11 @@ pub fn part2() -> usize {
         .lines()
         .map(|pass| seat_id(&pass.expect("pass")))
         .collect();
-    seat_ids.sort();
+    seat_ids.sort_unstable();
     let (f, _) = seat_ids[..seat_ids.len()]
         .iter()
         .zip(seat_ids[1..].iter())
-        .filter(|(f, s)| *s - *f > 1)
-        .next()
+        .find(|(f, s)| *s - *f > 1)
         .unwrap();
     f + 1
 }

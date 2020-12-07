@@ -175,7 +175,7 @@ fn parse_rule(rule: &str) -> (String, Vec<(String, String, u32)>) {
 
 fn count_to(graph: DiGraph<u32, u32>, dindex: u32) -> u32 {
     let mut nodes = HashSet::new();
-    for sindex in graph.clone().externals(Direction::Incoming) {
+    for sindex in graph.externals(Direction::Incoming) {
         let paths = all_simple_paths::<Vec<_>, _>(&graph, sindex, dindex.into(), 0, None);
         for path in paths {
             for node in path {
@@ -196,13 +196,13 @@ fn sum_from(graph: &DiGraph<u32, u32>, start: petgraph::prelude::NodeIndex, weig
     let nodes = graph.neighbors(start);
     let mut sum = 0;
     for (edge, node) in edges.zip(nodes) {
-        sum += sum_from(&graph, node.into(), *edge.weight());
+        sum += sum_from(&graph, node, *edge.weight());
     }
     weight + weight * sum
 }
 
 fn nodeid(nodeids: &HashMap<String, u32>, node: &str) -> u32 {
-    *nodeids.get(node.into()).expect("get")
+    *nodeids.get(node).expect("get")
 }
 
 #[cfg(test)]
